@@ -7,11 +7,10 @@
 #include <string>
 #include <stdio.h>
 #include <windows.h>
-
+#include <math.h>
 
 #include "Vertice.h"
 #include "Aresta.h"
-#include "templates.h"
 
 
 using namespace std;
@@ -175,9 +174,12 @@ vector<Vertice*> removeVertice(vector<Vertice*> vertices, unsigned indice){
 
 vector<Vertice*> perturbacao(vector<Vertice*> vertices){
 
-    vector<Vertice*> v ;
+    int nRemove = ceil(vertices.size()/10);
+
+    for(int i=0; i < nRemove; i++){
     unsigned indice = rand() % vertices.size();
     vertices = removeVertice(vertices, indice);
+    }
 
     return vertices;
 }
@@ -223,8 +225,6 @@ bool conexo(vector<Vertice*> vertices, vector<Aresta*> arestas){
     vizinhos.push_back(vertices[0]);
     visitados.push_back(vertices[0]);
 
-
-
     while(vizinhos.size()>0){
             //cout<< "Vizinhos size: " << vizinhos.size() << endl;
             //cout<< "Visitados size: " << visitados.size() << endl;
@@ -232,10 +232,7 @@ bool conexo(vector<Vertice*> vertices, vector<Aresta*> arestas){
             //Sleep(10000);
             vizinhos = coletaVizinhos(vizinhos, vertices, arestas,& visitados);
             vizinhos.erase(vizinhos.begin());
-
     }
-
-
     //Error: Nunca é true, sempre retorna falso.
     if(visitados.size() == vertices.size()){
         return true;
@@ -335,7 +332,7 @@ int main()
     melhorSolucao = solucao;
 
     while(criterio < 60){
-
+        cout<< "Criterio: " << criterio << endl;
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
         novaSolucao = buscaLocal(novaSolucao, arestas, limite);

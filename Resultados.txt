@@ -1,4 +1,4 @@
-Resultados parciais:
+Resultados retirando 1 vértice.   criterio = 60
 
 Instancia:		Resultado:		Tempo:			BKV:   
 moc01    		259				14.641 s		259
@@ -11,3 +11,19 @@ moc07			2010			63.833 s		2216
 moc08			-					-			170769		
 moc09			4788			38.707 s		5186
 moc10			-   				- 			144262
+
+
+Resultados retirando ceil(n/10) vértices  criterio = 60
+Instancia:		Resultado:		Tempo:			BKV:   
+moc01    		259				20.913 s		259
+moc02			66444.3			137.228 s		67314.1
+moc03			2029			73.104 s		2035
+moc04			12852.2			41.229 s		19625.2
+moc05			4554			824.668 s		4575
+moc06 			-					-			102206
+moc07			281				 3.969 s 		2216		
+moc08			-					-			170769		
+moc09			4784			 78.347 s		5186
+moc10			-   				- 			144262
+
+	
