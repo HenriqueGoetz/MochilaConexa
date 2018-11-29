@@ -33,7 +33,6 @@ void imprimeSolucaoAtual(vector<Vertice*> vertices){
     cout<<endl;
 }
 
-
 void imprimeSolucaoFinal(vector<Vertice*> vertices){
 
     float valores = 0;
@@ -56,8 +55,6 @@ void imprimeSolucaoFinal(vector<Vertice*> vertices){
     cout<<endl;
     cout<<endl;
 }
-
-
 
 vector<Vertice*> geraSolucaoInicial(vector<Vertice*> vertices, float limite){
     vector<Vertice*> v;
@@ -189,21 +186,17 @@ bool conexo(vector<Vertice*> vertices, vector<Aresta*> arestas){
 
     vizinhos.push_back(vertices[0]);
 
-    //cout<< "conexo1" <<endl;
-
     while(vizinhos.size()>0){
-        cout<<vizinhos.size()<<endl;
         long v = vizinhos.size();
         for(int i = 0; i < v; i++){
             visitados.push_back(vizinhos[i]);
             vizinhos = coletaVizinhos(vizinhos, vertices, arestas, visitados);
             vizinhos.erase(vizinhos.begin());
-            cout<< i<<endl;
         }
     }
 
-    cout<< "________" <<endl;
 
+    //Error: Nunca é true, sempre retorna falso.
     if(visitados.size() == vertices.size()){
         return true;
     }
@@ -222,11 +215,8 @@ bool aceitacao(vector<Vertice*> vertices, vector<Aresta*> arestas, float limite)
     if(pesos > limite)
         return false;
 
-    //cout<<"Aceitacao1"<<endl;
     if(!conexo(vertices, arestas))
         return false;
-
-    //cout<<"Aceitacao2"<<endl;
 
     return true;
 }
@@ -241,7 +231,6 @@ float calculaValor(vector<Vertice*> vertices){
 
     return valor;
 }
-
 
 void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *limite,string filename){
 
@@ -306,21 +295,7 @@ int main()
 
     srand(time(0));
 
-    /*
-    vertices.push_back(new Vertice(10,5));
-    vertices.push_back(new Vertice(5,4));
-    vertices.push_back(new Vertice(1,8));
-    vertices.push_back(new Vertice(15,10));
-    vertices.push_back(new Vertice(3,6));
-    arestas.push_back(new Aresta(vertices[0],vertices[1]));
-    arestas.push_back(new Aresta(vertices[1],vertices[4]));
-    arestas.push_back(new Aresta(vertices[2],vertices[3]));
-    arestas.push_back(new Aresta(vertices[1],vertices[2]));
-    arestas.clear();
-    vertices.clear();
-    */
-
-    lerArquivo(&vertices, &arestas, &limite, "teste.txt");
+    lerArquivo(&vertices, &arestas, &limite, "moc01");
 
     solucao = geraSolucaoInicial(vertices, limite);
 
@@ -337,7 +312,6 @@ int main()
 
         novaSolucao = buscaLocal(novaSolucao, arestas, limite);
 
-        //imprimeSolucaoAtual(novaSolucao);
        if(aceitacao(novaSolucao, arestas, limite)){
             solucao = novaSolucao;
             if(calculaValor(melhorSolucao)<calculaValor(novaSolucao)){
@@ -349,10 +323,8 @@ int main()
                     }
             }
         }
-
     }
 
-    cout << "Final" << endl;
     imprimeSolucaoFinal(melhorSolucao);
 
     return 0;
