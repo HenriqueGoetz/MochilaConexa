@@ -6,9 +6,12 @@
 #include <fstream>
 #include <string>
 #include <stdio.h>
+#include <windows.h>
+
 
 #include "Vertice.h"
 #include "Aresta.h"
+#include "templates.h"
 
 
 using namespace std;
@@ -69,29 +72,43 @@ vector<Vertice*> geraSolucaoInicial(vector<Vertice*> vertices, float limite){
     return v;
 }
 
+float calculaValor(vector<Vertice*> vertices){
+
+    float valor = 0;
+
+    for(unsigned i = 0; i < vertices.size(); i++){
+        valor = valor + vertices[i]->getValor();
+    }
+
+    return valor;
+}
+
+float calculaPeso(vector<Vertice*> vertices){
+
+    float peso = 0;
+
+    for(unsigned i = 0; i < vertices.size(); i++){
+        peso = peso + vertices[i]->getPeso();
+    }
+
+    return peso;
+}
+
 bool UltrapassaLimite(vector<Vertice*> solucao, Vertice* vertice, float limite){
 
-    float acumulado = 0;
-
-    for(unsigned i = 0; i < solucao.size(); i++){
-        acumulado = acumulado + solucao[i]->getPeso();
-    }
-
-    if (acumulado + vertice->getPeso()>limite){
+    if (calculaPeso(solucao)+ vertice->getPeso()>limite){
         return true;
     }
-
     return false;
 }
 
 bool EstaNaSolucao(vector<Vertice*> solucao, Vertice* vertice){
 
     for(unsigned i = 0; i < solucao.size(); i++){
-        if(solucao[i]==vertice){
+        if(solucao[i] == vertice){
             return true;
         }
     }
-
     return false;
 }
 
@@ -102,16 +119,17 @@ vector<Vertice*> buscaLocal(vector<Vertice*> solucao, vector<Aresta*> arestas, f
         for(unsigned j =0; j < arestas.size(); j++){
             if(solucao[i] == arestas[j]->getOrigem() && !EstaNaSolucao(solucao, arestas[j]->getDestino()) && !UltrapassaLimite(solucao, arestas[j]->getDestino(), limite)){
                     possiveisInclusoes.push_back(arestas[j]->getDestino());
-            }else
+            }else{
                 if(solucao[i] == arestas[j]->getDestino() && !EstaNaSolucao(solucao, arestas[j]->getOrigem()) && !UltrapassaLimite(solucao, arestas[j]->getOrigem(), limite)){
                     possiveisInclusoes.push_back(arestas[j]->getOrigem());
                     }
+            }
         }
     }
 
     while(possiveisInclusoes.size()>0){
 
-        int indice = 0;
+        unsigned indice = 0;
         float maisVantajoso = possiveisInclusoes[0]->getValor() / possiveisInclusoes[0]->getPeso();
 
         for(unsigned i = 1; i < possiveisInclusoes.size(); i++){
@@ -128,11 +146,12 @@ vector<Vertice*> buscaLocal(vector<Vertice*> solucao, vector<Aresta*> arestas, f
         for(unsigned i = 0; i < solucao.size(); i++){
             for(unsigned j =0; j < arestas.size(); j++){
                 if(solucao[i] == arestas[j]->getOrigem() && !EstaNaSolucao(solucao, arestas[j]->getDestino()) && !UltrapassaLimite(solucao, arestas[j]->getDestino(), limite)){
-                    possiveisInclusoes.push_back(arestas[j]->getDestino());
-                }else
+                        possiveisInclusoes.push_back(arestas[j]->getDestino());
+                }else{
                     if(solucao[i] == arestas[j]->getDestino() && !EstaNaSolucao(solucao, arestas[j]->getOrigem()) && !UltrapassaLimite(solucao, arestas[j]->getOrigem(), limite)){
                         possiveisInclusoes.push_back(arestas[j]->getOrigem());
-                    }
+                        }
+                }
             }
         }
     }
@@ -140,16 +159,31 @@ vector<Vertice*> buscaLocal(vector<Vertice*> solucao, vector<Aresta*> arestas, f
     return solucao;
 }
 
-vector<Vertice*> perturbacao(vector<Vertice*> vertices){
+vector<Vertice*> removeVertice(vector<Vertice*> vertices, unsigned indice){
+    vector<Vertice*> v;
 
-    vector<Vertice*> v ;
-    int indice = rand() % vertices.size();
-    vertices.erase(vertices.begin() + indice);
-    v = vertices;
+    for(unsigned i = 0; i < indice; i++){
+        v.push_back(vertices[i]);
+    }
+
+    for(unsigned i = indice+1; i < vertices.size(); i++){
+        v.push_back(vertices[i]);
+    }
+
     return v;
 }
 
+vector<Vertice*> perturbacao(vector<Vertice*> vertices){
+
+    vector<Vertice*> v ;
+    unsigned indice = rand() % vertices.size();
+    vertices = removeVertice(vertices, indice);
+
+    return vertices;
+}
+
 bool foiVisitado(vector<Vertice*> visitados, Vertice* vertice){
+
 
     for(unsigned i=0; i < visitados.size(); i++){
         if(visitados[i] == vertice){
@@ -159,18 +193,20 @@ bool foiVisitado(vector<Vertice*> visitados, Vertice* vertice){
     return false;
 }
 
-vector<Vertice*> coletaVizinhos(vector<Vertice*> vizinhos, vector<Vertice*> vertices, vector<Aresta*> arestas, vector<Vertice*> visitados){
+vector<Vertice*> coletaVizinhos(vector<Vertice*> vizinhos, vector<Vertice*> vertices, vector<Aresta*> arestas, vector<Vertice*> *visitados){
 
     vector<Vertice*> novosVizinhos = vizinhos;
 
     for(unsigned i = 0; i < arestas.size(); i++){
-        if(vizinhos[0] == arestas[i]->getDestino() && !foiVisitado(visitados, arestas[i]->getOrigem())){
+        if(vizinhos[0] == arestas[i]->getDestino() && !foiVisitado(*visitados, arestas[i]->getOrigem())){
             if(EstaNaSolucao(vertices,arestas[i]->getOrigem())){
+                (*visitados).push_back(arestas[i]->getOrigem());
                 novosVizinhos.push_back(arestas[i]->getOrigem());
             }
         }else
-            if(vizinhos[0] == arestas[i]->getOrigem() && !foiVisitado(visitados, arestas[i]->getDestino())){
+            if(vizinhos[0] == arestas[i]->getOrigem() && !foiVisitado(*visitados, arestas[i]->getDestino())){
                if(EstaNaSolucao(vertices,arestas[i]->getDestino())){
+                (*visitados).push_back(arestas[i]->getDestino());
                     novosVizinhos.push_back(arestas[i]->getDestino());
                 }
             }
@@ -185,14 +221,18 @@ bool conexo(vector<Vertice*> vertices, vector<Aresta*> arestas){
     vector<Vertice*> visitados;
 
     vizinhos.push_back(vertices[0]);
+    visitados.push_back(vertices[0]);
+
+
 
     while(vizinhos.size()>0){
-        long v = vizinhos.size();
-        for(int i = 0; i < v; i++){
-            visitados.push_back(vizinhos[i]);
-            vizinhos = coletaVizinhos(vizinhos, vertices, arestas, visitados);
+            //cout<< "Vizinhos size: " << vizinhos.size() << endl;
+            //cout<< "Visitados size: " << visitados.size() << endl;
+            //cout<< "Vertices size: " << vertices.size() << endl;
+            //Sleep(10000);
+            vizinhos = coletaVizinhos(vizinhos, vertices, arestas,& visitados);
             vizinhos.erase(vizinhos.begin());
-        }
+
     }
 
 
@@ -212,24 +252,15 @@ bool aceitacao(vector<Vertice*> vertices, vector<Aresta*> arestas, float limite)
         pesos = pesos + vertices[i]->getPeso();
     }
 
-    if(pesos > limite)
+    if(pesos > limite){
+        cout << "ERROR" <<endl;
         return false;
+    }
 
     if(!conexo(vertices, arestas))
         return false;
 
     return true;
-}
-
-float calculaValor(vector<Vertice*> vertices){
-
-    float valor = 0;
-
-    for(unsigned i = 0; i < vertices.size(); i++){
-        valor = valor + vertices[i]->getValor();
-    }
-
-    return valor;
 }
 
 void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *limite,string filename){
@@ -299,27 +330,24 @@ int main()
 
     solucao = geraSolucaoInicial(vertices, limite);
 
-    imprimeSolucaoAtual(solucao);
-
     solucao = buscaLocal(solucao, arestas, limite);
-
-    imprimeSolucaoAtual(solucao);
 
     melhorSolucao = solucao;
 
-    while(criterio < 100){
+    while(criterio < 60){
+
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
         novaSolucao = buscaLocal(novaSolucao, arestas, limite);
 
        if(aceitacao(novaSolucao, arestas, limite)){
-            solucao = novaSolucao;
+        solucao = novaSolucao;
             if(calculaValor(melhorSolucao)<calculaValor(novaSolucao)){
-                melhorSolucao = novaSolucao;
-                criterio = 0;
+              melhorSolucao = novaSolucao;
+              criterio = 0;
             }else{
                  if(calculaValor(melhorSolucao)==calculaValor(novaSolucao)){
-                    criterio++;
+                   criterio++;
                     }
             }
         }
