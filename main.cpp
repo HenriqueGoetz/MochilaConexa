@@ -241,10 +241,63 @@ float calculaValor(vector<Vertice*> vertices){
 
     return valor;
 }
+
+
+void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *limite,string filename){
+
+    vertices->clear();
+    arestas->clear();
+
+    //Leitura de arquivo.
+    string line, delimiter = " ";
+    ifstream myfile(filename);
+    int nVertices, mArestas;
+    if (myfile.is_open()){
+        while (!myfile.eof()){
+            getline(myfile,line);
+            nVertices = stoi(line.substr(0,line.find(delimiter)));
+            line.erase(0, line.find(delimiter) + delimiter.length());
+            mArestas = stoi(line.substr(0,line.find(delimiter)));
+            line.erase(0, line.find(delimiter) + delimiter.length());
+            *limite = stof(line.substr(0,line.find(delimiter)));
+
+            cout << nVertices << endl;
+            cout << mArestas << endl;
+            cout << *limite << endl;
+            getline(myfile,line);
+
+            for(int i = 0; i < nVertices; i++){
+                vertices->push_back(new Vertice(stof(line.substr(0,line.find(delimiter)))));
+                line.erase(0, line.find(delimiter) + delimiter.length());
+            }
+            getline(myfile,line);
+            for(int i = 0; i < nVertices; i++){
+                (*vertices)[i]->setValor(stof(line.substr(0,line.find(delimiter))));
+                line.erase(0, line.find(delimiter) + delimiter.length());
+
+            }
+
+            for(int i = 0; i < mArestas; i++){
+                getline(myfile,line);
+                unsigned origem = stoi(line.substr(0,line.find(delimiter)));
+                line.erase(0, line.find(delimiter) + delimiter.length());
+                arestas->push_back(new Aresta((*vertices)[origem], (*vertices)[stoi(line.substr(0,line.find(delimiter)))]));
+            }
+
+            while(!myfile.eof()){
+                getline(myfile,line);
+            }
+        }
+        myfile.close();
+    }else
+        cout << "Unable to open file" << endl;
+
+
+}
 int main()
 {
     int criterio = 0;
-    float limite = 31;
+    float limite = 0;
 
     vector<Aresta*> arestas;
     vector<Vertice*> vertices;
@@ -267,50 +320,7 @@ int main()
     vertices.clear();
     */
 
-    //Leitura de arquivo.
-    string line, delimiter = " ";
-    ifstream myfile("moc01");
-    int nVertices, mArestas;
-    if (myfile.is_open()){
-        while (!myfile.eof()){
-            getline(myfile,line);
-            nVertices = stoi(line.substr(0,line.find(delimiter)));
-            line.erase(0, line.find(delimiter) + delimiter.length());
-            mArestas = stoi(line.substr(0,line.find(delimiter)));
-            line.erase(0, line.find(delimiter) + delimiter.length());
-            limite = stof(line.substr(0,line.find(delimiter)));
-
-            cout << nVertices << endl;
-            cout << mArestas << endl;
-            cout << limite << endl;
-            getline(myfile,line);
-
-            for(int i = 0; i < nVertices; i++){
-                vertices.push_back(new Vertice(stof(line.substr(0,line.find(delimiter)))));
-                line.erase(0, line.find(delimiter) + delimiter.length());
-            }
-            getline(myfile,line);
-            for(int i = 0; i < nVertices; i++){
-                vertices[i]->setValor(stof(line.substr(0,line.find(delimiter))));
-                line.erase(0, line.find(delimiter) + delimiter.length());
-
-            }
-
-            for(int i = 0; i < mArestas; i++){
-                getline(myfile,line);
-                unsigned origem = stoi(line.substr(0,line.find(delimiter)));
-                line.erase(0, line.find(delimiter) + delimiter.length());
-                arestas.push_back(new Aresta(vertices[origem], vertices[stoi(line.substr(0,line.find(delimiter)))]));
-            }
-
-            while(!myfile.eof()){
-                getline(myfile,line);
-            }
-        }
-        myfile.close();
-    }else
-        cout << "Unable to open file" << endl;
-
+    lerArquivo(&vertices, &arestas, &limite, "teste.txt");
 
     solucao = geraSolucaoInicial(vertices, limite);
 
