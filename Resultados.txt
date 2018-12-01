@@ -1,29 +1,41 @@
-Resultados retirando 1 vértice.   criterio = 60
+﻿Resultados retirando 1 vértice.   criterio = 60
 
 Instancia:		Resultado:		Tempo:			BKV:   
-moc01    		259				14.641 s		259
+moc01    		259			14.641 s		259
 moc02			66444.3			43.567 s		67314.1
 moc03			2023			10.224 s		2035
 moc04			12852.2			12.475 s		19625.2
-moc05			-					-			4575
-moc06 			-					-			102206
+moc05			-			-			4575
+moc06 			-			-			102206
 moc07			2010			63.833 s		2216		
-moc08			-					-			170769		
+moc08			-			-			170769		
 moc09			4788			38.707 s		5186
-moc10			-   				- 			144262
+moc10			-   			- 			144262
 
 
 Resultados retirando ceil(n/10) vértices  criterio = 60
 Instancia:		Resultado:		Tempo:			BKV:   
-moc01    		259				20.913 s		259
+moc01    		259			20.913 s		259
 moc02			66444.3			137.228 s		67314.1
 moc03			2029			73.104 s		2035
 moc04			12852.2			41.229 s		19625.2
 moc05			4554			824.668 s		4575
-moc06 			-					-			102206
-moc07			281				 3.969 s 		2216		
-moc08			-					-			170769		
+moc06 			-			-			102206
+moc07			281			3.969 s 		2216		
+moc08			-			-			170769		
 moc09			4784			 78.347 s		5186
-moc10			-   				- 			144262
+moc10			-   			- 			144262
 
+Resultados retirando 2 vértices  criterio = 50 tempo limite= 30min tempo mínimo: 1min
+Instancia:		Resultado:		Tempo:			BKV:   
+moc01    		259			60.505 s		259
+moc02			66444.3			1800.381 s		67314.1
+moc03			2029			60.665 s		2035
+moc04			12935.8			1800.068 s		19625.2
+moc05			4554			104.938 s		4575
+moc06 			97197.1			1800.924 s		102206
+moc07			2235	 		247.842 s 		2216		
+moc08			163344			1800.812 s		170769		
+moc09			4837			1800.544 s		5186
+moc10			143901  		1802.983 s		144262
 	

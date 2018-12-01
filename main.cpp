@@ -174,7 +174,7 @@ vector<Vertice*> removeVertice(vector<Vertice*> vertices, unsigned indice){
 
 vector<Vertice*> perturbacao(vector<Vertice*> vertices){
 
-    int nRemove = ceil(vertices.size()/10);
+    int nRemove = 2;//ceil(vertices.size()/10);
 
     for(int i=0; i < nRemove; i++){
     unsigned indice = rand() % vertices.size();
@@ -226,14 +226,10 @@ bool conexo(vector<Vertice*> vertices, vector<Aresta*> arestas){
     visitados.push_back(vertices[0]);
 
     while(vizinhos.size()>0){
-            //cout<< "Vizinhos size: " << vizinhos.size() << endl;
-            //cout<< "Visitados size: " << visitados.size() << endl;
-            //cout<< "Vertices size: " << vertices.size() << endl;
-            //Sleep(10000);
             vizinhos = coletaVizinhos(vizinhos, vertices, arestas,& visitados);
             vizinhos.erase(vizinhos.begin());
     }
-    //Error: Nunca é true, sempre retorna falso.
+
     if(visitados.size() == vertices.size()){
         return true;
     }
@@ -278,9 +274,9 @@ void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *lim
             line.erase(0, line.find(delimiter) + delimiter.length());
             *limite = stof(line.substr(0,line.find(delimiter)));
 
-            cout << nVertices << endl;
-            cout << mArestas << endl;
-            cout << *limite << endl;
+            //cout << nVertices << endl;
+            //cout << mArestas << endl;
+            //cout << *limite << endl;
             getline(myfile,line);
 
             for(int i = 0; i < nVertices; i++){
@@ -323,7 +319,9 @@ int main()
 
     srand(time(0));
 
-    lerArquivo(&vertices, &arestas, &limite, "moc01");
+    lerArquivo(&vertices, &arestas, &limite, "moc10");
+
+    clock_t tInicio = clock();
 
     solucao = geraSolucaoInicial(vertices, limite);
 
@@ -331,8 +329,8 @@ int main()
 
     melhorSolucao = solucao;
 
-    while(criterio < 60){
-        cout<< "Criterio: " << criterio << endl;
+    while((criterio < 50 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30) || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60){
+        cout<< "Criterio: " << criterio << " Tempo: " << ((float)(clock()-tInicio))/CLOCKS_PER_SEC <<endl;
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
         novaSolucao = buscaLocal(novaSolucao, arestas, limite);
@@ -350,7 +348,14 @@ int main()
         }
     }
 
+
     imprimeSolucaoFinal(melhorSolucao);
+
+    if(criterio >= 50){
+        cout << "Termino por repeticao. " << endl;
+    }else{
+        cout << "Termino por tempo. " << endl;
+    }
 
     return 0;
 }
