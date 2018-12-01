@@ -329,7 +329,7 @@ int main()
 
     melhorSolucao = solucao;
 
-    while((criterio < 50 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30) || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60){
+    while((criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30)){ // || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60
         cout<< "Criterio: " << criterio << " Tempo: " << ((float)(clock()-tInicio))/CLOCKS_PER_SEC <<endl;
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
@@ -351,7 +351,7 @@ int main()
 
     imprimeSolucaoFinal(melhorSolucao);
 
-    if(criterio >= 50){
+    if(criterio >= 300){
         cout << "Termino por repeticao. " << endl;
     }else{
         cout << "Termino por tempo. " << endl;
