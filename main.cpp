@@ -9,31 +9,62 @@
 #include <windows.h>
 #include <math.h>
 
-#include "Vertice.h"
-#include "Aresta.h"
-
-
 using namespace std;
 
-void imprimeSolucaoAtual(vector<Vertice*> vertices){
-
-    float valores = 0;
-    float pesos = 0;
-
-    cout<<"   **********************************************"<<endl;
-    cout<<"   ************    Solucao Atual     ************"<<endl;
-    cout<<"   **********************************************"<<endl;
-
-    for(unsigned i = 0; i < vertices.size(); i++){
-        pesos = pesos + vertices[i]->getPeso();
-        valores = valores + vertices[i]->getValor();
-        cout << "   *   " << i+1 << " - Valor:\t" << vertices[i]->getValor() <<"\tPeso:\t" << vertices[i]->getPeso()<< "\t*" << endl;
-    }
-    cout<<"   **********************************************"<<endl;
-    cout <<"   *    Valor Total: " << valores << "\t Peso Total: " << pesos << "\t\t*" << endl;
-    cout<<"   **********************************************"<<endl;
-    cout<<endl;
+//Classe Vértice
+class Vertice{
+    protected:
+    private:
+        float valor;
+        float peso;
+    public:
+Vertice(){
+    //ctor
 }
+Vertice(float valor, float peso){
+    this->valor = valor;
+    this->peso = peso;
+}
+Vertice(float peso){
+    this->peso = peso;
+}
+~Vertice(){
+    //dtor
+}
+float getPeso(){
+    return this->peso;
+}
+float getValor(){
+    return this->valor;
+}
+void setValor(float valor){
+    this->valor = valor;
+}
+};
+
+// Classe Aresta
+class Aresta{
+    protected:
+    private:
+        Vertice* origem;
+        Vertice* destino;
+    public:
+Aresta(){
+}
+Aresta(Vertice* origem, Vertice* destino){
+    this->origem = origem;
+    this->destino = destino;
+}
+~Aresta(){
+}
+Vertice* getOrigem(){
+    return this->origem;
+}
+
+Vertice* getDestino(){
+    return this->destino;
+}
+};
 
 void imprimeSolucaoFinal(vector<Vertice*> vertices){
 
@@ -67,7 +98,6 @@ vector<Vertice*> geraSolucaoInicial(vector<Vertice*> vertices, float limite){
                 return v;
             }
     }
-
     return v;
 }
 
@@ -319,7 +349,7 @@ int main()
 
     srand(time(0));
 
-    lerArquivo(&vertices, &arestas, &limite, "moc10");
+    lerArquivo(&vertices, &arestas, &limite, "moc01");
 
     clock_t tInicio = clock();
 
