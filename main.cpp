@@ -213,7 +213,7 @@ vector<Vertice*> removeVertice(vector<Vertice*> vertices, unsigned indice){
 
 vector<Vertice*> perturbacao(vector<Vertice*> vertices){
 
-    int nRemove = 2;//ceil(vertices.size()/10);
+    int nRemove = ceil(vertices.size()/5);
 
     for(int i=0; i < nRemove; i++){
     unsigned indice = rand() % vertices.size();
@@ -343,7 +343,7 @@ void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *lim
 }
 
 void escreverArquivo(vector<Vertice*> vertices,string fileOut, float tempo){
-	
+
 	ofstream myfile(fileOut);
 	myfile << "N de Vertices: " << vertices.size()<<endl;
 	myfile << "Valor Total: " << calculaValor(vertices) << endl;
@@ -354,9 +354,9 @@ void escreverArquivo(vector<Vertice*> vertices,string fileOut, float tempo){
 	for(unsigned i = 0; i < vertices.size(); i++){
 		myfile << vertices[i]->getId() << "				" << vertices[i]->getValor() << "			" << vertices[i]->getPeso() << endl;
 	}
-	
+
 	myfile.close();
-	
+
 }
 
 int main(int argc, char *argv[])
@@ -372,7 +372,7 @@ int main(int argc, char *argv[])
     srand(time(0));
 
     lerArquivo(&vertices, &arestas, &limite, argv[2]);
-	
+
     clock_t tInicio = clock();
 
     solucao = geraSolucaoInicial(vertices, limite);
@@ -381,7 +381,7 @@ int main(int argc, char *argv[])
 
     melhorSolucao = solucao;
 
-    while(criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30){ // || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60
+    while((criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30) || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60){ //
         cout<< "Criterio: " << criterio << " Tempo: " << ((float)(clock()-tInicio))/CLOCKS_PER_SEC <<endl;
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
@@ -407,10 +407,9 @@ int main(int argc, char *argv[])
     }else{
         cout << "Termino por tempo. " << endl;
     }
-	
+
 	escreverArquivo(melhorSolucao, argv[1], ((float)(clock()-tInicio))/CLOCKS_PER_SEC);
-	
-	
+
     return 0;
 }
 
