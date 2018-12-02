@@ -1,3 +1,4 @@
+#define _GLIBCXX_USE_CXX11_ABI 0
 #include <iostream>
 #include <vector>
 #include <cstdlib>
@@ -15,6 +16,7 @@ using namespace std;
 class Vertice{
     protected:
     private:
+		int id;
         float valor;
         float peso;
     public:
@@ -25,11 +27,18 @@ Vertice(float valor, float peso){
     this->valor = valor;
     this->peso = peso;
 }
+Vertice(int id, float peso){
+    this->id = id;
+	this->peso = peso;
+}
 Vertice(float peso){
     this->peso = peso;
 }
 ~Vertice(){
     //dtor
+}
+int getId(){
+    return this->id;
 }
 float getPeso(){
     return this->peso;
@@ -304,13 +313,10 @@ void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *lim
             line.erase(0, line.find(delimiter) + delimiter.length());
             *limite = stof(line.substr(0,line.find(delimiter)));
 
-            //cout << nVertices << endl;
-            //cout << mArestas << endl;
-            //cout << *limite << endl;
             getline(myfile,line);
 
             for(int i = 0; i < nVertices; i++){
-                vertices->push_back(new Vertice(stof(line.substr(0,line.find(delimiter)))));
+                vertices->push_back(new Vertice(i,stof(line.substr(0,line.find(delimiter)))));
                 line.erase(0, line.find(delimiter) + delimiter.length());
             }
             getline(myfile,line);
@@ -334,10 +340,26 @@ void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *lim
         myfile.close();
     }else
         cout << "Unable to open file" << endl;
-
-
 }
-int main()
+
+void escreverArquivo(vector<Vertice*> vertices,string fileOut, float tempo){
+	
+	ofstream myfile(fileOut);
+	myfile << "N de Vertices: " << vertices.size()<<endl;
+	myfile << "Valor Total: " << calculaValor(vertices) << endl;
+	myfile << "Peso Total: " << calculaPeso(vertices) << endl;
+	myfile << "Tempo de Duracao: " << tempo << " s" <<endl;
+	myfile << endl;
+	myfile << "Vertice:		Valor:		Peso:"<< endl;
+	for(unsigned i = 0; i < vertices.size(); i++){
+		myfile << vertices[i]->getId() << "				" << vertices[i]->getValor() << "			" << vertices[i]->getPeso() << endl;
+	}
+	
+	myfile.close();
+	
+}
+
+int main(int argc, char *argv[])
 {
     int criterio = 0;
     float limite = 0;
@@ -349,8 +371,8 @@ int main()
 
     srand(time(0));
 
-    lerArquivo(&vertices, &arestas, &limite, "moc01");
-
+    lerArquivo(&vertices, &arestas, &limite, argv[2]);
+	
     clock_t tInicio = clock();
 
     solucao = geraSolucaoInicial(vertices, limite);
@@ -359,7 +381,7 @@ int main()
 
     melhorSolucao = solucao;
 
-    while((criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30)){ // || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60
+    while(criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30){ // || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60
         cout<< "Criterio: " << criterio << " Tempo: " << ((float)(clock()-tInicio))/CLOCKS_PER_SEC <<endl;
         vector<Vertice*> novaSolucao = perturbacao(solucao);
 
@@ -378,7 +400,6 @@ int main()
         }
     }
 
-
     imprimeSolucaoFinal(melhorSolucao);
 
     if(criterio >= 300){
@@ -386,7 +407,10 @@ int main()
     }else{
         cout << "Termino por tempo. " << endl;
     }
-
+	
+	escreverArquivo(melhorSolucao, argv[1], ((float)(clock()-tInicio))/CLOCKS_PER_SEC);
+	
+	
     return 0;
 }
 
