@@ -211,13 +211,16 @@ vector<Vertice*> removeVertice(vector<Vertice*> vertices, unsigned indice){
     return v;
 }
 
-vector<Vertice*> perturbacao(vector<Vertice*> vertices){
+vector<Vertice*> perturbacao(vector<Vertice*> vertices, int perturbation_size){
 
-    int nRemove = ceil(vertices.size()/5);
+    float v = vertices.size();
+    float p = perturbation_size;
+
+    int nRemove = ceil(v/p);
 
     for(int i=0; i < nRemove; i++){
-    unsigned indice = rand() % vertices.size();
-    vertices = removeVertice(vertices, indice);
+        unsigned indice = rand() % vertices.size();
+        vertices = removeVertice(vertices, indice);
     }
 
     return vertices;
@@ -323,7 +326,6 @@ void lerArquivo(vector<Vertice*> *vertices, vector<Aresta*> *arestas, float *lim
             for(int i = 0; i < nVertices; i++){
                 (*vertices)[i]->setValor(stof(line.substr(0,line.find(delimiter))));
                 line.erase(0, line.find(delimiter) + delimiter.length());
-
             }
 
             for(int i = 0; i < mArestas; i++){
@@ -359,10 +361,20 @@ void escreverArquivo(vector<Vertice*> vertices,string fileOut, float tempo){
 
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]){
     int criterio = 0;
     float limite = 0;
+
+    if(argc!=7){
+        cout << "Error: number of parameters incorrect." <<endl;
+        cout << "Parameters: stdout stdin max_time min_time max_not_improved perturbation_size" <<endl;
+        return 0;
+    }
+
+    float max_time = atof(argv[3]);
+    float min_time = atof(argv[4]);
+    int max_not_improved = atoi(argv[5]);
+    int perturbation_size = atoi(argv[6]);
 
     vector<Aresta*> arestas;
     vector<Vertice*> vertices;
@@ -381,9 +393,9 @@ int main(int argc, char *argv[])
 
     melhorSolucao = solucao;
 
-    while((criterio < 300 && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 60*30) || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < 4*60){ //
+    while((criterio < max_not_improved && ((float)(clock()-tInicio))/CLOCKS_PER_SEC < max_time) || ((float)(clock()-tInicio))/CLOCKS_PER_SEC < min_time){ //
         cout<< "Criterio: " << criterio << " Tempo: " << ((float)(clock()-tInicio))/CLOCKS_PER_SEC <<endl;
-        vector<Vertice*> novaSolucao = perturbacao(solucao);
+        vector<Vertice*> novaSolucao = perturbacao(solucao, perturbation_size);
 
         novaSolucao = buscaLocal(novaSolucao, arestas, limite);
 
@@ -394,19 +406,13 @@ int main(int argc, char *argv[])
               criterio = 0;
             }else{
                  if(calculaValor(melhorSolucao)==calculaValor(novaSolucao)){
-                   criterio++;
+                        criterio++;
                     }
             }
         }
     }
 
     imprimeSolucaoFinal(melhorSolucao);
-
-    if(criterio >= 300){
-        cout << "Termino por repeticao. " << endl;
-    }else{
-        cout << "Termino por tempo. " << endl;
-    }
 
 	escreverArquivo(melhorSolucao, argv[1], ((float)(clock()-tInicio))/CLOCKS_PER_SEC);
 

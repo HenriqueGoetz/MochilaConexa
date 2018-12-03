@@ -1,0 +1,1 @@
+Resultados para main stdout stdin 180 60 50 20
